@@ -182,31 +182,57 @@ docker buildx build \
 
 ### 运行容器
 
-将宿主机 `data` 目录挂载进容器，保证配置与历史持久化。
+容器内服务固定监听 **5000**；通过 `-p 宿主机端口:5000` 映射到宿主机任意端口。  
+业务数据与配置建议挂载到宿主机，避免容器删除后丢失。
 
-**Windows PowerShell**
+| 宿主机路径（示例） | 容器路径 | 说明 |
+|--------------------|----------|------|
+| `./data` | `/app/data` | 业务数据：`app_config.json`、`state.json`、`history.json` |
+| `./settings.json` | `/app/settings.json` | 程序配置（如 `data_dir`，一般保持 `"data"` 即可） |
+
+`-p` 格式：`宿主机端口:容器端口`。例如 `-p 8080:5000` 表示本机 **8080** 访问容器内 5000。
+
+#### 推荐：数据 + 配置挂载，自定义宿主机端口
+
+**Windows PowerShell**（示例：宿主机 `8080`）
 
 ```powershell
 docker run -d `
-  -p 5000:5000 `
+  -p 8080:5000 `
   -v "${PWD}/data:/app/data" `
+  -v "${PWD}/settings.json:/app/settings.json:ro" `
   --name parking `
   parking-rotation:3.11
 ```
 
-**Linux / macOS（Shell）**
+**Linux / macOS（Shell）**（示例：宿主机 `8080`）
 
 ```bash
 docker run -d \
-  -p 5000:5000 \
+  -p 8080:5000 \
   -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/settings.json:/app/settings.json:ro" \
   --name parking \
   parking-rotation:3.11
 ```
 
-访问：http://127.0.0.1:5000
+访问：http://127.0.0.1:8080
 
-常用管理命令：
+说明：
+
+- `data` 建议**可写**挂载（抽签、撤销、设置保存都会改写其中文件）
+- `settings.json` 可用 `:ro` 只读挂载；若需在宿主机改 `data_dir` 再重启容器，去掉 `:ro` 即可
+- 仍想用默认端口时，把 `-p 8080:5000` 改成 `-p 5000:5000`
+
+#### 仅改端口、不挂载（数据在容器内，不推荐生产）
+
+```bash
+docker run -d -p 9000:5000 --name parking parking-rotation:3.11
+```
+
+访问：http://127.0.0.1:9000
+
+#### 常用管理命令
 
 ```bash
 docker logs -f parking
@@ -217,7 +243,12 @@ docker rm parking
 在 Apple Silicon 上若要强制跑 amd64 镜像：
 
 ```bash
-docker run -d --platform linux/amd64 -p 5000:5000 -v "$(pwd)/data:/app/data" --name parking parking-rotation:3.11-amd64
+docker run -d --platform linux/amd64 \
+  -p 8080:5000 \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/settings.json:/app/settings.json:ro" \
+  --name parking \
+  parking-rotation:3.11-amd64
 ```
 
 ---
