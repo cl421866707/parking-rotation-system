@@ -1,6 +1,6 @@
 # Python 3.11 runtime for parking-rotation-system
 # Base image via DaoCloud mirror (China-accessible Docker Hub proxy)
-FROM docker.m.daocloud.io/library/python:3.11-slim
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/python:3.11-slim-bookworm-linuxarm64
 
 WORKDIR /app
 
