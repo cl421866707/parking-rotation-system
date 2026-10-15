@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>停车轮换抽签系统</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>停车轮换抽签</h1>
+      <p class="subtitle">5 人 · 园区 2 + 公园 1 · 半年一轮</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card" id="section-rules">
+      <h2>规则说明</h2>
+      <pre class="rules-text" id="rules-text"></pre>
+    </section>
+
+    <section class="card" id="section-people">
+      <h2>参与分配（5 人）</h2>
+      <ul class="chip-list" id="people-list"></ul>
+    </section>
+
+    <section class="card" id="section-spots">
+      <h2>本轮车位</h2>
+      <div class="spot-board" id="spot-board"></div>
+    </section>
+
+    <section class="card" id="section-plates">
+      <h2>录牌名单（姓名）</h2>
+      <div class="plate-grid">
+        <div>
+          <h3>园区可进（4 人）</h3>
+          <ul class="chip-list" id="campus-plates"></ul>
+        </div>
+        <div>
+          <h3>公园车位</h3>
+          <ul class="chip-list" id="park-holder"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="section-pools">
+      <h2>当前池子（下轮预览）</h2>
+      <p class="hint" id="next-period-hint"></p>
+      <div class="pool-grid">
+        <div class="pool pool-must">
+          <h3>必中池</h3>
+          <ul class="chip-list" id="pool-must"></ul>
+        </div>
+        <div class="pool pool-bye">
+          <h3>轮空池</h3>
+          <ul class="chip-list" id="pool-bye"></ul>
+        </div>
+        <div class="pool pool-candidate">
+          <h3>候选池</h3>
+          <ul class="chip-list" id="pool-candidate"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card actions-card">
+      <h2>操作</h2>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="btn-open-draw">开始抽签</button>
+        <button type="button" class="btn btn-danger" id="btn-undo">撤销最近一次</button>
+      </div>
+      <p class="status" id="status-msg" role="status"></p>
+    </section>
+
+    <section class="card" id="section-history">
+      <h2>分配历史</h2>
+      <div id="history-list" class="history-list"></div>
+    </section>
+
+    <section class="card" id="section-settings">
+      <h2>设置</h2>
+      <p class="hint">人数与车位数量锁定；可修改姓名、车位显示名与规则文案。</p>
+      <form id="settings-form">
+        <fieldset>
+          <legend>参与人姓名</legend>
+          <div id="settings-people" class="settings-people"></div>
+        </fieldset>
+        <fieldset>
+          <legend>车位显示名</legend>
+          <label class="field">园区
+            <input type="text" id="label-campus" name="label-campus" required />
+          </label>
+          <label class="field">公园
+            <input type="text" id="label-park" name="label-park" required />
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>规则说明</legend>
+          <textarea id="rules-edit" rows="12" required></textarea>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">保存设置</button>
+      </form>
+    </section>
+  </main>
+
+  <dialog id="draw-dialog">
+    <form method="dialog" class="dialog-body" id="draw-form">
+      <h2>确认抽签</h2>
+      <p class="hint" id="dialog-period"></p>
+      <div class="pool-grid">
+        <div class="pool pool-must">
+          <h3>必中池</h3>
+          <ul class="chip-list" id="dialog-must"></ul>
+        </div>
+        <div class="pool pool-bye">
+          <h3>轮空池</h3>
+          <ul class="chip-list" id="dialog-bye"></ul>
+        </div>
+        <div class="pool pool-candidate">
+          <h3>候选池</h3>
+          <ul class="chip-list" id="dialog-candidate"></ul>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn" id="btn-cancel-draw" value="cancel">取消</button>
+        <button type="submit" class="btn btn-primary" id="btn-confirm-draw" value="confirm">确认抽签</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="result-dialog">
+    <div class="dialog-body">
+      <h2>抽签结果</h2>
+      <p class="hint" id="result-period"></p>
+      <div id="result-body"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-primary" id="btn-close-result">关闭</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{
+  "draw_count": 5,
+  "people_state": {
+    "p1": {
+      "consecutive_wins": 0,
+      "is_bye_next": false
+    },
+    "p2": {
+      "consecutive_wins": 1,
+      "is_bye_next": false
+    },
+    "p3": {
+      "consecutive_wins": 2,
+      "is_bye_next": true
+    },
+    "p4": {
+      "consecutive_wins": 0,
+      "is_bye_next": false
+    },
+    "p5": {
+      "consecutive_wins": 1,
+      "is_bye_next": false
+    }
+  },
+  "current": {
+    "winners": [
+      {
+        "id": "p2",
+        "name": "陈奉辉"
+      },
+      {
+        "id": "p5",
+        "name": "陈龙"
+      },
+      {
+        "id": "p3",
+        "name": "夏维"
+      }
+    ],
+    "assignments": {
+      "p5": {
+        "spot": "campus",
+        "name": "陈龙"
+      },
+      "p2": {
+        "spot": "campus",
+        "name": "陈奉辉"
+      },
+      "p3": {
+        "spot": "park",
+        "name": "夏维"
+      }
+    },
+    "campus_plate_holders": [
+      {
+        "id": "p1",
+        "name": "武鹏程"
+      },
+      {
+        "id": "p2",
+        "name": "陈奉辉"
+      },
+      {
+        "id": "p4",
+        "name": "管元恺"
+      },
+      {
+        "id": "p5",
+        "name": "陈龙"
+      }
+    ],
+    "park_holder": {
+      "id": "p3",
+      "name": "夏维"
+    }
+  },
+  "last_winners": [
+    "p2",
+    "p5",
+    "p3"
+  ]
+}
