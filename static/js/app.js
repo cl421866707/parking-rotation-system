@@ -3,11 +3,15 @@
 
   /** @type {any} */
   let appData = null;
+  let activePanel = "panel-draw";
+  let historyFilterFrom = "";
+  let historyFilterTo = "";
 
   const $ = (id) => document.getElementById(id);
 
-  function setStatus(msg, type = "") {
-    const el = $("status-msg");
+  function setStatus(msg, type = "", targetId = "status-msg") {
+    const el = $(targetId);
+    if (!el) return;
     el.textContent = msg || "";
     el.className = "status" + (type ? ` ${type}` : "");
   }
@@ -25,6 +29,48 @@
   function spotLabel(type, config) {
     const spot = (config.spots || []).find((s) => s.type === type);
     return spot ? spot.label : type === "campus" ? "园区车位" : "公园车位";
+  }
+
+  function switchTab(panelId) {
+    activePanel = panelId;
+    document.querySelectorAll(".tab").forEach((tab) => {
+      const selected = tab.dataset.panel === panelId;
+      tab.classList.toggle("active", selected);
+      tab.setAttribute("aria-selected", selected ? "true" : "false");
+    });
+    document.querySelectorAll(".panel").forEach((panel) => {
+      const show = panel.id === panelId;
+      panel.classList.toggle("hidden", !show);
+      if (show) {
+        panel.removeAttribute("hidden");
+      } else {
+        panel.setAttribute("hidden", "");
+      }
+    });
+  }
+
+  function entryDate(entry) {
+    const label = (entry.period_label || "").trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(label)) {
+      return label.slice(0, 10);
+    }
+    const drawn = (entry.drawn_at || "").trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(drawn)) {
+      return drawn.slice(0, 10);
+    }
+    return "";
+  }
+
+  function filterHistoryByDate(history, from, to) {
+    const list = history || [];
+    if (!from && !to) return list;
+    return list.filter((entry) => {
+      const d = entryDate(entry);
+      if (!d) return false;
+      if (from && d < from) return false;
+      if (to && d > to) return false;
+      return true;
+    });
   }
 
   function renderPeople(config) {
@@ -106,11 +152,21 @@
   function renderHistory(history, config) {
     const root = $("history-list");
     root.innerHTML = "";
+    const filtered = filterHistoryByDate(history, historyFilterFrom, historyFilterTo);
+    const hasFilter = !!(historyFilterFrom || historyFilterTo);
+
     if (!history || !history.length) {
       root.innerHTML = '<p class="hint">暂无历史记录</p>';
       return;
     }
-    [...history].reverse().forEach((entry) => {
+    if (!filtered.length) {
+      root.innerHTML = hasFilter
+        ? '<p class="hint">该日期范围内无记录</p>'
+        : '<p class="hint">暂无历史记录</p>';
+      return;
+    }
+
+    [...filtered].reverse().forEach((entry) => {
       const details = document.createElement("details");
       details.className = "history-item";
       const summary = document.createElement("summary");
@@ -149,6 +205,11 @@
       chips(detail.querySelector('[data-k="a-bye"]'), after.bye);
       chips(detail.querySelector('[data-k="a-cand"]'), after.candidate);
     });
+  }
+
+  function refreshHistoryList() {
+    if (!appData) return;
+    renderHistory(appData.history, appData.config);
   }
 
   function renderSettings(config) {
@@ -221,6 +282,30 @@
     $("result-dialog").showModal();
   }
 
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      switchTab(tab.dataset.panel);
+    });
+  });
+
+  $("btn-history-apply").addEventListener("click", () => {
+    historyFilterFrom = $("history-date-from").value || "";
+    historyFilterTo = $("history-date-to").value || "";
+    if (historyFilterFrom && historyFilterTo && historyFilterFrom > historyFilterTo) {
+      setStatus("开始日期不能晚于结束日期", "error");
+      return;
+    }
+    refreshHistoryList();
+  });
+
+  $("btn-history-clear").addEventListener("click", () => {
+    historyFilterFrom = "";
+    historyFilterTo = "";
+    $("history-date-from").value = "";
+    $("history-date-to").value = "";
+    refreshHistoryList();
+  });
+
   $("btn-open-draw").addEventListener("click", async () => {
     try {
       const preview = await api("/api/pools");
@@ -292,18 +377,20 @@
       ],
       rules_text: $("rules-edit").value,
     };
-    setStatus("保存设置…");
+    setStatus("保存设置…", "", "settings-status");
     try {
       const data = await api("/api/config", {
         method: "PUT",
         body: JSON.stringify(payload),
       });
       applyBootstrap(data);
+      setStatus("设置已保存", "ok", "settings-status");
       setStatus("设置已保存", "ok");
     } catch (e) {
-      setStatus(e.message, "error");
+      setStatus(e.message, "error", "settings-status");
     }
   });
 
+  switchTab("panel-draw");
   load();
 })();

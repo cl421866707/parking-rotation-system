@@ -14,93 +14,120 @@
     </div>
   </header>
 
+  <nav class="tabs" role="tablist" aria-label="功能切换">
+    <div class="tabs-inner">
+      <button type="button" class="tab active" role="tab" id="tab-draw" data-panel="panel-draw" aria-selected="true" aria-controls="panel-draw">抽签</button>
+      <button type="button" class="tab" role="tab" id="tab-history" data-panel="panel-history" aria-selected="false" aria-controls="panel-history">历史记录</button>
+      <button type="button" class="tab" role="tab" id="tab-settings" data-panel="panel-settings" aria-selected="false" aria-controls="panel-settings">系统设置</button>
+    </div>
+  </nav>
+
   <main class="layout">
-    <section class="card" id="section-rules">
-      <h2>规则说明</h2>
-      <pre class="rules-text" id="rules-text"></pre>
-    </section>
+    <div class="panel" id="panel-draw" role="tabpanel" aria-labelledby="tab-draw">
+      <section class="card" id="section-rules">
+        <h2>规则说明</h2>
+        <pre class="rules-text" id="rules-text"></pre>
+      </section>
 
-    <section class="card" id="section-people">
-      <h2>参与分配（5 人）</h2>
-      <ul class="chip-list" id="people-list"></ul>
-    </section>
+      <section class="card" id="section-people">
+        <h2>参与分配（5 人）</h2>
+        <ul class="chip-list" id="people-list"></ul>
+      </section>
 
-    <section class="card" id="section-spots">
-      <h2>本轮车位</h2>
-      <div class="spot-board" id="spot-board"></div>
-    </section>
+      <section class="card" id="section-spots">
+        <h2>本轮车位</h2>
+        <div class="spot-board" id="spot-board"></div>
+      </section>
 
-    <section class="card" id="section-plates">
-      <h2>录牌名单（姓名）</h2>
-      <div class="plate-grid">
-        <div>
-          <h3>园区可进（4 人）</h3>
-          <ul class="chip-list" id="campus-plates"></ul>
+      <section class="card" id="section-plates">
+        <h2>录牌名单（姓名）</h2>
+        <div class="plate-grid">
+          <div>
+            <h3>园区可进（4 人）</h3>
+            <ul class="chip-list" id="campus-plates"></ul>
+          </div>
+          <div>
+            <h3>公园车位</h3>
+            <ul class="chip-list" id="park-holder"></ul>
+          </div>
         </div>
-        <div>
-          <h3>公园车位</h3>
-          <ul class="chip-list" id="park-holder"></ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="card" id="section-pools">
-      <h2>当前池子（下轮预览）</h2>
-      <p class="hint" id="next-period-hint"></p>
-      <div class="pool-grid">
-        <div class="pool pool-must">
-          <h3>必中池</h3>
-          <ul class="chip-list" id="pool-must"></ul>
+      <section class="card" id="section-pools">
+        <h2>当前池子（下轮预览）</h2>
+        <p class="hint" id="next-period-hint"></p>
+        <div class="pool-grid">
+          <div class="pool pool-must">
+            <h3>必中池</h3>
+            <ul class="chip-list" id="pool-must"></ul>
+          </div>
+          <div class="pool pool-bye">
+            <h3>轮空池</h3>
+            <ul class="chip-list" id="pool-bye"></ul>
+          </div>
+          <div class="pool pool-candidate">
+            <h3>候选池</h3>
+            <ul class="chip-list" id="pool-candidate"></ul>
+          </div>
         </div>
-        <div class="pool pool-bye">
-          <h3>轮空池</h3>
-          <ul class="chip-list" id="pool-bye"></ul>
+      </section>
+
+      <section class="card actions-card">
+        <h2>操作</h2>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-open-draw">开始抽签</button>
+          <button type="button" class="btn btn-danger" id="btn-undo">撤销最近一次</button>
         </div>
-        <div class="pool pool-candidate">
-          <h3>候选池</h3>
-          <ul class="chip-list" id="pool-candidate"></ul>
-        </div>
-      </div>
-    </section>
+        <p class="status" id="status-msg" role="status"></p>
+      </section>
+    </div>
 
-    <section class="card actions-card">
-      <h2>操作</h2>
-      <div class="actions">
-        <button type="button" class="btn btn-primary" id="btn-open-draw">开始抽签</button>
-        <button type="button" class="btn btn-danger" id="btn-undo">撤销最近一次</button>
-      </div>
-      <p class="status" id="status-msg" role="status"></p>
-    </section>
-
-    <section class="card" id="section-history">
-      <h2>分配历史</h2>
-      <div id="history-list" class="history-list"></div>
-    </section>
-
-    <section class="card" id="section-settings">
-      <h2>设置</h2>
-      <p class="hint">人数与车位数量锁定；可修改姓名、车位显示名与规则文案。</p>
-      <form id="settings-form">
-        <fieldset>
-          <legend>参与人姓名</legend>
-          <div id="settings-people" class="settings-people"></div>
-        </fieldset>
-        <fieldset>
-          <legend>车位显示名</legend>
-          <label class="field">园区
-            <input type="text" id="label-campus" name="label-campus" required />
+    <div class="panel hidden" id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+      <section class="card" id="section-history">
+        <h2>分配历史</h2>
+        <div class="history-filter">
+          <label class="field">开始日期
+            <input type="date" id="history-date-from" />
           </label>
-          <label class="field">公园
-            <input type="text" id="label-park" name="label-park" required />
+          <label class="field">结束日期
+            <input type="date" id="history-date-to" />
           </label>
-        </fieldset>
-        <fieldset>
-          <legend>规则说明</legend>
-          <textarea id="rules-edit" rows="12" required></textarea>
-        </fieldset>
-        <button type="submit" class="btn btn-primary">保存设置</button>
-      </form>
-    </section>
+          <div class="history-filter-actions">
+            <button type="button" class="btn btn-primary" id="btn-history-apply">应用</button>
+            <button type="button" class="btn" id="btn-history-clear">清除</button>
+          </div>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </div>
+
+    <div class="panel hidden" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <section class="card" id="section-settings">
+        <h2>系统设置</h2>
+        <p class="hint">人数与车位数量锁定；可修改姓名、车位显示名与规则文案。</p>
+        <p class="status" id="settings-status" role="status"></p>
+        <form id="settings-form">
+          <fieldset>
+            <legend>参与人姓名</legend>
+            <div id="settings-people" class="settings-people"></div>
+          </fieldset>
+          <fieldset>
+            <legend>车位显示名</legend>
+            <label class="field">园区
+              <input type="text" id="label-campus" name="label-campus" required />
+            </label>
+            <label class="field">公园
+              <input type="text" id="label-park" name="label-park" required />
+            </label>
+          </fieldset>
+          <fieldset>
+            <legend>规则说明</legend>
+            <textarea id="rules-edit" rows="12" required></textarea>
+          </fieldset>
+          <button type="submit" class="btn btn-primary">保存设置</button>
+        </form>
+      </section>
+    </div>
   </main>
 
   <dialog id="draw-dialog">
